@@ -1,6 +1,9 @@
 var express = require("express");
 var bodyParser = require("body-parser");
 var User = require("./models/user").User;
+var session = require("express-session");
+
+
 var app = express();
 
 //Montando los middlewares
@@ -10,12 +13,19 @@ app.use("/public",express.static('public'));
 app.use(bodyParser.json()); //Para peticiones application/json
 app.use(bodyParser.urlencoded({extended: true}));
 
+app.use(session({
+	secret: "89a7fa9s8f7saf",
+	resave: true, //Se vuelve a guardar la session aunque no haya sido modificada
+	saveUninitialized: false //Se guarda la session si es nueva
+}));
+
 var port = 8080;
 
 app.set("view engine", "jade");
 
 
 app.get("/", function(req, res){
+	console.log(req.session.user_id);
 	res.render("index");
 });
 
@@ -60,14 +70,13 @@ app.post("/sessions", function(req, res){
 		- Metodo findOne: Devuelve un solo documento
 		- Metodo findById: Devuelve el documento el cual corresponde al _id que se le pasa como parametro (_id que genera mongo)
 	*******/
-	User.find(
+	User.findOne(
 		{
 			email: req.body.email, 
 			password: req.body.password
-		}, function(err, docs){
-
-			console.log(docs);
-			res.send("hola mundo");
+		}, function(err, user){
+			req.session.user_id = user._id;
+			res.send("Hola mundo!");
 		});
 
 });
