@@ -19,11 +19,15 @@ app.get("/", function(req, res){
 	res.render("index");
 });
 
-app.get("/login", function(req, res){
+app.get("/signup", function(req, res){
 	User.find(function(err, doc){
 		console.log(JSON.stringify(doc)﻿);
-		res.render("login");
+		res.render("signup");
 	});
+});
+
+app.get("/login", function(req, res){
+		res.render("login");
 });
 
 app.post("/users", function(req, res){
@@ -37,12 +41,35 @@ app.post("/users", function(req, res){
 	console.log(user.password_confirmation);
 	console.log(user.email);
 	console.log(user.password);
-	user.save(function(err){
-		if(err){
-			console.log(String(err));
-		}
-		res.send("Guardamos tus datos");
+	
+	user.save().then(function(us){
+		res.send("Guardamos tus datos correctamente!");
+	}, function(err){
+		console.log(String(err));
+		res.send("Hubo un error al guardar el usuario");
 	});
+
+});
+
+
+
+
+app.post("/sessions", function(req, res){
+	/***** METODOS FIND:  
+		- Metodo find: Devuelve una coleccion de documentos que cumplen con una condicion.
+		- Metodo findOne: Devuelve un solo documento
+		- Metodo findById: Devuelve el documento el cual corresponde al _id que se le pasa como parametro (_id que genera mongo)
+	*******/
+	User.find(
+		{
+			email: req.body.email, 
+			password: req.body.password
+		}, function(err, docs){
+
+			console.log(docs);
+			res.send("hola mundo");
+		});
+
 });
 
 app.listen(port);

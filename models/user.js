@@ -60,7 +60,7 @@ var user_schema = new Schema({
 		}
 	}
 });
-
+	
 
 
 user_schema.virtual("password_confirmation")
